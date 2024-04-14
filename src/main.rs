@@ -1,5 +1,4 @@
-
-use bevy::{log, prelude::*};
+use bevy::prelude::*;
 use bevy::diagnostic::LogDiagnosticsPlugin;
 pub mod player;
 pub mod animation;
@@ -10,11 +9,7 @@ fn main() {
     .add_systems(Startup, setup_cam)
     .run();
 }
-// #[asset(path = "assets/monster/Monsters_Creatures_Fantasy/Skeleton/Walk.png")]
 
 fn setup_cam(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
 }
-
-
-
