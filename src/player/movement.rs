@@ -7,20 +7,8 @@ pub fn handle_movement(
         input: Res<ButtonInput<KeyCode>>,
         time: Res<Time>
         ) {
-            let mut direction = Vec3::splat(0.);
-            
-            if input.pressed(KeyCode::KeyA) {
-                direction.x -=1.;
-            }
-            if input.pressed(KeyCode::KeyD) {
-                direction.x +=1.;
-            }
-            if input.pressed(KeyCode::KeyW) {
-                direction.y +=1.;
-            }
-            if input.pressed(KeyCode::KeyS) {
-                direction.y -=1.;
-            }
+            let (mut transform, mut char, mut sprite) = query.single_mut();
+            let direction = get_direction(input);
 
             //none of the buttons are pressed
             if direction == Vec3::ZERO {
@@ -29,9 +17,35 @@ pub fn handle_movement(
                 }
                 return;
             }
-
-            for (mut transform, mut char, _) in &mut query {
-                transform.translation += direction * char.speed* time.delta_seconds();
-                char.is_moving = true;
+            
+            transform.translation += direction.normalize() * char.speed* time.delta_seconds();
+            
+            //TODO: REWRITE TO NORMAL
+            if direction.x < 0. {
+                 sprite.flip_x = true;
             }
+            else if direction.x > 0. {
+                sprite.flip_x = false;
+            }
+                
+            char.is_moving = true;
+}
+
+//TODO: Is it normal to pass Res<> ?
+fn get_direction(input: Res<ButtonInput<KeyCode>>) -> Vec3 {
+    let mut direction = Vec3::ZERO;
+            
+    if input.pressed(KeyCode::KeyA) {
+        direction.x -=1.;
+    }
+    if input.pressed(KeyCode::KeyD) {
+        direction.x +=1.;
+    }
+    if input.pressed(KeyCode::KeyW) {
+        direction.y +=1.;
+    }
+    if input.pressed(KeyCode::KeyS) {
+        direction.y -=1.;
+    }
+    direction
 }

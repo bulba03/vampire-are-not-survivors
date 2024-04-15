@@ -1,4 +1,4 @@
-pub mod movement;
+mod movement;
 
 use bevy::time::{Timer, TimerMode};
 use bevy::transform::components::Transform;

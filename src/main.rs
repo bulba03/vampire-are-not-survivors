@@ -1,16 +1,19 @@
+
 use bevy::prelude::*;
-use bevy::diagnostic::LogDiagnosticsPlugin;
 pub mod player;
 pub mod animation;
+pub mod camera;
+
+// const MAP_SIZE: f32 = 1000.0;
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
-        .add_plugins(LogDiagnosticsPlugin::default())
-        .add_plugins((animation::AnimationPlugin, player::PlayerPlugin))
-        .add_systems(Startup, setup_cam)
+        .add_plugins(DefaultPlugins) 
+        .add_plugins(
+            (
+                animation::AnimationPlugin,
+                player::PlayerPlugin,
+                camera::CameraPlugin
+            )
+        )
         .run();
-}
-
-fn setup_cam(mut commands: Commands) {
-    commands.spawn(Camera2dBundle::default());
 }
