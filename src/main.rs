@@ -3,7 +3,7 @@ use bevy::prelude::*;
 pub mod player;
 pub mod animation;
 pub mod camera;
-
+pub mod monster;
 // const MAP_SIZE: f32 = 1000.0;
 fn main() {
     App::new()
@@ -12,7 +12,8 @@ fn main() {
             (
                 animation::AnimationPlugin,
                 player::PlayerPlugin,
-                camera::CameraPlugin
+                camera::CameraPlugin,
+                monster::MonsterPlugin
             )
         )
         .run();

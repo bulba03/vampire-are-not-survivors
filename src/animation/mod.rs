@@ -26,7 +26,7 @@ fn animate_sprite(
         
         if let Some(player) = player {
             if !player.is_moving {
-                return;
+                continue;
             }
         }
 
