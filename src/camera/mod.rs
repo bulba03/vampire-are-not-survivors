@@ -20,25 +20,35 @@ impl Plugin for CameraPlugin {
             .add_systems(Update, follow_cam_by_player);
     }
 }
+
 fn setup_cam(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
-) {
-//TODO: Add bg image
-
-commands.spawn((SpriteBundle {
-texture: asset_server.load(BG_GRID_TEXTURE),
-transform: Transform::from_xyz(0.0,0.,-100.).with_scale(Vec3::splat(200.)),
-..default()
-}, ImageScaleMode::Tiled { tile_x: true, tile_y: true, stretch_value: 0.01 }));
-commands.spawn(Camera2dBundle::default());
+    asset_server: Res<AssetServer>) 
+    {
+        commands.spawn(
+            (
+                    SpriteBundle {
+                        texture: asset_server.load(BG_GRID_TEXTURE),
+                        transform: Transform::from_xyz(0.0,0.,-100.)
+                                    .with_scale(Vec3::splat(200.)),
+                        ..default()
+                    },
+                    ImageScaleMode::Tiled { tile_x: true, tile_y: true, stretch_value: 0.01 }
+                )
+            );
+        
+        commands.spawn(Camera2dBundle::default());
 
 }
 
-fn follow_cam_by_player(mut _commands: Commands, mut query: Query<&Transform, With<Player>>, mut camera_q: Query<&mut Transform, (With<Camera2d>, Without<Player>)>) {
-let mut transform = camera_q.single_mut();
-let player_pos = query.single_mut();
-transform.translation.x = player_pos.translation.x;
-transform.translation.y = player_pos.translation.y;
+fn follow_cam_by_player(
+        mut _commands: Commands, 
+        mut query: Query<&Transform, With<Player>>, 
+        mut camera_q: Query<&mut Transform, (With<Camera2d>, Without<Player>)>) {
+        
+            let mut transform = camera_q.single_mut();
+            let player_pos = query.single_mut();
 
+            transform.translation.x = player_pos.translation.x;
+            transform.translation.y = player_pos.translation.y;
 }
