@@ -27,9 +27,13 @@ impl Plugin for PlayerPlugin {
 pub struct Player {
     pub speed: f32,
     pub base_damage: f32,
-    pub is_moving: bool
+    pub is_moving: bool,
 }
-
+#[derive(Component)]
+pub struct Health {
+    pub max: f32,
+    pub current: f32
+}
 fn spawn_player(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -56,6 +60,10 @@ fn spawn_player(
                     speed: 100.0,
                     base_damage: 10.,
                     is_moving: false
+                },
+                Health {
+                    max: 100.,
+                    current: 100.
                 },
                 animation_indices,
                 AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating))

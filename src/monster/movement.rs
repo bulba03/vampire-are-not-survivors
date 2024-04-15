@@ -2,15 +2,14 @@ use bevy::{ecs::{query::{With, Without}, system::{Commands, Query, Res}}, sprite
 use crate::player::Player;
 
 use super::Monster;
-
 pub fn move_to_player(
     mut _commands: Commands,
-    mut monters_q: Query<(&mut Transform, &Monster, &mut Sprite)>,
+    mut monsters_q: Query<(&mut Transform, &Monster, &mut Sprite)>,
     player_q: Query<&Transform, (With<Player>, Without<Monster>)>,
     time: Res<Time>
     ) {
         let player = player_q.single();
-        for (mut transform, monster, mut sprite) in monters_q.iter_mut() {
+        for (mut transform, monster, mut sprite) in monsters_q.iter_mut() {
             if player.translation.distance(transform.translation) <= 0.5 {
                 continue;
             }

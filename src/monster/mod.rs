@@ -10,9 +10,11 @@ use rand::Rng;
 mod movement;
 mod monster_type;
 mod resources;
+mod damage;
 use crate::{animation::{AnimationIndices, AnimationTimer}, player::Player};
 
 use self::monster_type::MonsterType;
+use self::damage::{damage_player, DamageTimer};
 use self::resources::{MonsterCounter, MonstersData};
 
 const ENEMY_SPAWN_RADIUS: f32 = 400.;
@@ -26,13 +28,13 @@ impl Plugin for MonsterPlugin {
                             enemy_spawn_timer: Timer::from_seconds(0.5, TimerMode::Repeating)
                         }
                     )
-        .add_systems(Startup, load_monter_sprites)
-        .add_systems(Update, (handle_enemy_spawn_timer, movement::move_to_player));
+        .add_systems(Startup, load_monster_sprites)
+        .add_systems(Update, (handle_enemy_spawn_timer, movement::move_to_player, damage_player));
     }
 }
 
-fn load_monter_sprites(mut commands: Commands, asset_server: Res<AssetServer>, texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>) {
-    commands.insert_resource(MonstersData::construct(asset_server, texture_atlas_layouts));
+fn load_monster_sprites(mut commands: Commands, asset_server: Res<AssetServer>, mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>) {
+    commands.insert_resource(MonstersData::construct(asset_server, &mut texture_atlas_layouts));
 }
 
 
@@ -57,13 +59,14 @@ fn handle_enemy_spawn_timer(
         if counter.enemy_spawn_timer.just_finished() {
             let player = player_q.single();
             spawn_monster(commands, sprite_data,player);
+            counter.enemy_count +=1;
         }
 }
 
 fn spawn_monster(mut commands: Commands,
                 sprite_data: ResMut<MonstersData>,
                 player: &Transform) {
-                    let bat_data = &sprite_data.bat;
+                    let bat_data = &sprite_data.mushroom;
                     let texture = bat_data.texture.clone();
                     let texture_atlas_layout = bat_data.atlas_layout.clone();
                     let animation_indices = &bat_data.animation_indices;
@@ -80,7 +83,7 @@ fn spawn_monster(mut commands: Commands,
                             layout: texture_atlas_layout,
                             index: animation_indices.first,
                         },
-                        
+
                         transform: Transform::from_xyz(enemy_position.x, enemy_position.y, 1.),
                         ..default()
                     };
@@ -91,7 +94,8 @@ fn spawn_monster(mut commands: Commands,
                             sprite_bundle,
                             AnimationIndices{ first: animation_indices.first, last: animation_indices.last },
                             Monster::construct_from_type(MonsterType::Bat),
-                            AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating))
+                            AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
+                            DamageTimer(Timer::from_seconds(0.5, TimerMode::Once))
                         )
                     );
 }

@@ -20,6 +20,7 @@ impl Plugin for CameraPlugin {
             .add_systems(Update, follow_cam_by_player);
     }
 }
+
 fn setup_cam(
     mut commands: Commands,
     asset_server: Res<AssetServer>) 

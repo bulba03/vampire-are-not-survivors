@@ -8,7 +8,7 @@ pub fn handle_movement(
         time: Res<Time>
         ) {
             let (mut transform, mut char, mut sprite) = query.single_mut();
-            let direction = get_direction(input);
+            let direction = get_direction(input.clone());
 
             //none of the buttons are pressed
             if direction == Vec3::ZERO {
@@ -32,7 +32,7 @@ pub fn handle_movement(
 }
 
 //TODO: Is it normal to pass Res<> ?
-fn get_direction(input: Res<ButtonInput<KeyCode>>) -> Vec3 {
+fn get_direction(input: ButtonInput<KeyCode>) -> Vec3 {
     let mut direction = Vec3::ZERO;
             
     if input.pressed(KeyCode::KeyA) {
