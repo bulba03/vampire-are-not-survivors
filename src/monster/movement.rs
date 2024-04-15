@@ -2,6 +2,7 @@ use bevy::{ecs::{query::{With, Without}, system::{Commands, Query, Res}}, sprite
 use crate::player::Player;
 
 use super::Monster;
+
 pub fn move_to_player(
     mut _commands: Commands,
     mut monsters_q: Query<(&mut Transform, &Monster, &mut Sprite)>,

@@ -31,7 +31,6 @@ pub fn handle_movement(
             char.is_moving = true;
 }
 
-//TODO: Is it normal to pass Res<> ?
 fn get_direction(input: ButtonInput<KeyCode>) -> Vec3 {
     let mut direction = Vec3::ZERO;
             

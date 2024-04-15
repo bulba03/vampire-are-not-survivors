@@ -14,7 +14,7 @@ impl Monster {
     }
 }
 
-fn bat_monster_stats()->Monster {
+fn bat_monster_stats() -> Monster {
     Monster {
         hp: 10.,
         damage: 20.,
@@ -22,7 +22,7 @@ fn bat_monster_stats()->Monster {
     }
 }
 
-fn mushroom_monster_stats()->Monster {
+fn mushroom_monster_stats() -> Monster {
     Monster {
         hp: 15.,
         damage: 20.,

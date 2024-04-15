@@ -11,6 +11,7 @@ mod movement;
 mod monster_type;
 mod resources;
 mod damage;
+use crate::player::Health;
 use crate::{animation::{AnimationIndices, AnimationTimer}, player::Player};
 
 use self::monster_type::MonsterType;
@@ -88,14 +89,17 @@ fn spawn_monster(mut commands: Commands,
                         ..default()
                     };
                     sprite_bundle.sprite.flip_x = enemy_position.x < player.translation.x;
+                    let monster = Monster::construct_from_type(MonsterType::Bat);
 
                     commands.spawn(
                         (   
                             sprite_bundle,
                             AnimationIndices{ first: animation_indices.first, last: animation_indices.last },
-                            Monster::construct_from_type(MonsterType::Bat),
+                            Health {max: monster.hp, current: monster.hp},
+                            monster,
                             AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
-                            DamageTimer(Timer::from_seconds(0.5, TimerMode::Once))
+                            DamageTimer(Timer::from_seconds(0.5, TimerMode::Once)),
+                           
                         )
                     );
 }

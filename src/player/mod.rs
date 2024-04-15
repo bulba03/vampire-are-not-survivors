@@ -1,5 +1,5 @@
 mod movement;
-
+mod healthbar;
 use bevy::time::{Timer, TimerMode};
 use bevy::transform::components::Transform;
 use bevy::sprite::{SpriteSheetBundle, TextureAtlas, TextureAtlasLayout};
@@ -7,8 +7,9 @@ use bevy::prelude::default;
 use bevy::math::{Vec2, Vec3};
 use bevy::ecs::{component::Component, system::{Commands, Res, ResMut}};
 use bevy::asset::{AssetServer, Assets};
-use bevy::app::{Plugin, Startup, Update};
+use bevy::app::{Plugin, PostUpdate, Startup, Update};
 use crate::animation::{AnimationIndices, AnimationTimer};
+use self::healthbar::{spawn_healthbar, update_health_bar, HealthBar};
 use self::movement::handle_movement;
 
 const SKELETON_WALK_ANIM: &str = "monster/Monsters_Creatures_Fantasy/Skeleton/Walk.png";
@@ -18,7 +19,8 @@ pub struct PlayerPlugin;
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         app.add_systems(Startup, spawn_player)
-        .add_systems(Update, handle_movement);
+        .add_systems(Update, handle_movement)
+        .add_systems(PostUpdate, update_health_bar);
     }
 }
 
@@ -44,7 +46,7 @@ fn spawn_player(
         let texture_atlas_layout = texture_atlas_layouts.add(layout);
         let animation_indices = AnimationIndices { first: 0, last: 3 };
         
-        commands.spawn(
+        let entity = commands.spawn(
             (   
                 SpriteSheetBundle{
                     texture,
@@ -66,7 +68,9 @@ fn spawn_player(
                     current: 100.
                 },
                 animation_indices,
-                AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating))
+                AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
+                HealthBar::default()
             )
-        );
+        ).id();
+        spawn_healthbar(commands, entity);
 }
