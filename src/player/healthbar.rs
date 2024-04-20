@@ -27,6 +27,13 @@ impl Default for HealthBar {
     }
 }
 
+impl Health {
+    pub fn deal_damage(&mut self, damage: f32) {
+        self.current -= damage;
+        let _ = self.current.clamp( 0., self.max);
+    }
+}
+
 pub fn spawn_healthbar(mut commands: Commands, player: Entity) {
     let bar = HealthBar::default();
     let bg_bar =  commands.spawn(SpriteBundle {
