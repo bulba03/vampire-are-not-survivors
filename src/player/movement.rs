@@ -1,25 +1,29 @@
+use bevy_xpbd_2d::{components::LinearVelocity, math::AdjustPrecision};
+
 use crate::*;
 use super::Player;
 
 pub fn handle_movement( 
         mut _commands: Commands,
-        mut query: Query<(&mut Transform, &mut Player, &mut Sprite)>,
+        mut query: Query<(&mut LinearVelocity, &mut Player, &mut Sprite)>,
         input: Res<ButtonInput<KeyCode>>,
         time: Res<Time>
         ) {
-            let (mut transform, mut char, mut sprite) = query.single_mut();
+            for (mut vel, mut char, mut sprite) in query.iter_mut() {
             let direction = get_direction(input.clone());
 
             //none of the buttons are pressed
             if direction == Vec3::ZERO {
-                for (_, mut char, _) in &mut query {
+                for (mut vel, mut char, _) in &mut query {
                     char.is_moving = false;
+                    vel.x =  0.;
+                    vel.y =  0.;
                 }
                 return;
             }
             
-            transform.translation += direction.normalize() * char.speed* time.delta_seconds();
-            
+            vel.x = direction.normalize().x * char.speed* time.delta_seconds_f64().adjust_precision();
+            vel.y = direction.normalize().y * char.speed* time.delta_seconds_f64().adjust_precision();
             //TODO: REWRITE TO NORMAL
             if direction.x < 0. {
                  sprite.flip_x = true;
@@ -29,6 +33,7 @@ pub fn handle_movement(
             }
                 
             char.is_moving = true;
+        }
 }
 
 fn get_direction(input: ButtonInput<KeyCode>) -> Vec3 {

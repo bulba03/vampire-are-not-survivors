@@ -6,12 +6,16 @@ use bevy::math::{Vec2, Vec3Swizzles};
 use bevy::ecs::{component::Component, query::With, system::{Commands, Query, Res, ResMut}};
 use bevy::asset::{AssetServer, Assets};
 use bevy::app::{Plugin, Startup, Update};
+use bevy_xpbd_2d::components::{ColliderDensity, LockedAxes, RigidBody};
+use bevy_xpbd_2d::math::Vector;
+use bevy_xpbd_2d::plugins::collision::{Collider, Sensor};
+use bevy_xpbd_2d::resources::Gravity;
 use rand::Rng;
 mod movement;
 mod monster_type;
 mod resources;
 mod damage;
-use crate::player::Health;
+use crate::player::{Health, TestCol};
 use crate::{animation::{AnimationIndices, AnimationTimer}, player::Player};
 
 use self::monster_type::MonsterType;
@@ -30,6 +34,7 @@ impl Plugin for MonsterPlugin {
                         }
                     )
         .add_systems(Startup, load_monster_sprites)
+        .insert_resource(Gravity(Vector::ZERO))
         .add_systems(Update, (handle_enemy_spawn_timer, movement::move_to_player, damage_player));
     }
 }
@@ -99,7 +104,10 @@ fn spawn_monster(mut commands: Commands,
                             monster,
                             AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
                             DamageTimer(Timer::from_seconds(0.5, TimerMode::Once)),
-                           
+                            RigidBody::Dynamic,
+                            Collider::rectangle(50.,50.),
+                            LockedAxes::ALL_LOCKED,
+                            // Sensor
                         )
                     );
 }
