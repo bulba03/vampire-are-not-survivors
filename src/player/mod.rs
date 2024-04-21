@@ -2,10 +2,11 @@ mod movement;
 mod healthbar;
 
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
+use bevy::ecs::schedule::IntoSystemConfigs;
 use bevy::time::{ Timer, TimerMode };
 use bevy::transform::components::Transform;
 use bevy::sprite::{ SpriteSheetBundle, TextureAtlas, TextureAtlasLayout };
-use bevy::prelude::default;
+use bevy::prelude::{default, App};
 use bevy::math::{ Vec2, Vec3 };
 use bevy::ecs::{ component::Component, system::{ Commands, Res, ResMut } };
 use bevy::asset::{ AssetServer, Assets };
@@ -14,6 +15,7 @@ use bevy_xpbd_2d::components::{ LockedAxes, RigidBody };
 use bevy_xpbd_2d::plugins::collision::Collider;
 use bevy_xpbd_2d::plugins::{ PhysicsDebugPlugin, PhysicsPlugins };
 use crate::animation::{ AnimationIndices, AnimationTimer };
+use crate::run_if_player_alive;
 use self::healthbar::{ spawn_healthbar, update_health_bar, HealthBar };
 use self::movement::handle_movement;
 
@@ -22,15 +24,15 @@ const SKELETON_WALK_ANIM: &str = "monster/Monsters_Creatures_Fantasy/Skeleton/Wa
 pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
-    fn build(&self, app: &mut bevy::prelude::App) {
+    fn build(&self, app: &mut App) {
         app.add_systems(Startup, spawn_player)
             .add_plugins((
                 PhysicsPlugins::default(),
                 PhysicsDebugPlugin::default(),
                 FrameTimeDiagnosticsPlugin,
             ))
-            .add_systems(Update, handle_movement)
-            .add_systems(PostUpdate, update_health_bar);
+            .add_systems(Update, handle_movement.run_if(run_if_player_alive))
+            .add_systems(PostUpdate, update_health_bar.run_if(run_if_player_alive));
     }
 }
 

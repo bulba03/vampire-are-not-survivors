@@ -1,3 +1,4 @@
+use bevy::ecs::schedule::IntoSystemConfigs;
 use bevy::transform::components::Transform;
 use bevy::time::{ Time, Timer, TimerMode };
 use bevy::sprite::TextureAtlasLayout;
@@ -5,8 +6,6 @@ use bevy::math::{ Vec2, Vec3Swizzles };
 use bevy::ecs::{ component::Component, query::With, system::{ Commands, Query, Res, ResMut } };
 use bevy::asset::{ AssetServer, Assets };
 use bevy::app::{ Plugin, Startup, Update };
-use bevy_xpbd_2d::math::Vector;
-use bevy_xpbd_2d::resources::Gravity;
 use rand::Rng;
 mod movement;
 mod monster_type;
@@ -14,6 +13,7 @@ mod resources;
 mod bundles;
 pub mod damage;
 use crate::player::Player;
+use crate::run_if_player_alive;
 
 use self::bundles::{ bat_bundle, mushroom_bundle };
 use self::damage::{ deal_damage_to_player, handle_damage_timer };
@@ -30,13 +30,12 @@ impl Plugin for MonsterPlugin {
             enemy_spawn_timer: Timer::from_seconds(0.5, TimerMode::Repeating),
         })
             .add_systems(Startup, load_monster_sprites)
-            .insert_resource(Gravity(Vector::ZERO))
             .add_systems(Update, (
                 handle_enemy_spawn_timer,
                 movement::move_to_player,
                 handle_damage_timer,
                 deal_damage_to_player,
-            ));
+            ).run_if(run_if_player_alive));
     }
 }
 

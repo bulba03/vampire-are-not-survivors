@@ -33,9 +33,10 @@ impl Default for HealthBar {
 }
 
 impl Health {
-    pub fn deal_damage(&mut self, damage: f32) {
+    pub fn deal_damage(&mut self, damage: f32) -> bool {
         self.current -= damage;
         let _ = self.current.clamp(0.0, self.max);
+        self.current > 0.
     }
 }
 

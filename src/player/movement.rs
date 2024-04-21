@@ -14,18 +14,15 @@ pub fn handle_movement(
 
         //none of the buttons are pressed
         if direction == Vec3::ZERO {
-            for (mut vel, _, mut char, _) in &mut query {
+            for (_, _, mut char, _) in &mut query {
                 char.is_moving = false;
-                vel.x = 0.0;
-                vel.y = 0.0;
             }
             return;
         }
         pos.x += direction.normalize().x * char.speed * time.delta_seconds_f64().adjust_precision();
         pos.y += direction.normalize().y * char.speed * time.delta_seconds_f64().adjust_precision();
-        vel.x = direction.normalize().x * char.speed * time.delta_seconds_f64().adjust_precision();
-        vel.y = direction.normalize().y * char.speed * time.delta_seconds_f64().adjust_precision();
-
+        vel.x = 0.;
+        vel.y = 0.;
         //TODO: REWRITE TO NORMAL
         if direction.x < 0.0 {
             sprite.flip_x = true;

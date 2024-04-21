@@ -17,7 +17,10 @@ pub fn move_to_player(
     player_q: Query<&Transform, (With<Player>, Without<Monster>)>,
     time: Res<Time>
 ) {
-    let player = player_q.single();
+    let player = match player_q.get_single() {
+        Ok(player) => player,
+        Err(_) => return,
+    };
     for (transform, monster, mut pos, mut vel, mut sprite) in monsters_q.iter_mut() {
         if player.translation.distance(transform.translation) <= 0.5 {
             continue;

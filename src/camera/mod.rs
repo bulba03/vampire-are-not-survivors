@@ -1,3 +1,4 @@
+use bevy::ecs::schedule::IntoSystemConfigs;
 use bevy::transform::components::Transform;
 use bevy::sprite::{ ImageScaleMode, SpriteBundle };
 use bevy::prelude::default;
@@ -8,6 +9,7 @@ use bevy::asset::AssetServer;
 use bevy::app::{ Plugin, Startup, Update };
 
 use crate::player::Player;
+use crate::run_if_player_alive;
 
 const BG_GRID_TEXTURE: &str = "grid/dark/texture_03.png";
 
@@ -15,7 +17,7 @@ pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
-        app.add_systems(Startup, setup_cam).add_systems(Update, follow_cam_by_player);
+        app.add_systems(Startup, setup_cam).add_systems(Update, follow_cam_by_player.run_if(run_if_player_alive));
     }
 }
 
@@ -26,7 +28,7 @@ fn setup_cam(mut commands: Commands, asset_server: Res<AssetServer>) {
             transform: Transform::from_xyz(0.0, 0.0, -100.0).with_scale(Vec3::splat(200.0)),
             ..default()
         },
-        ImageScaleMode::Tiled { tile_x: true, tile_y: true, stretch_value: 0.01 },
+        ImageScaleMode::Tiled { tile_x: true, tile_y: true, stretch_value: 0.1 },
     ));
 
     commands.spawn(Camera2dBundle::default());

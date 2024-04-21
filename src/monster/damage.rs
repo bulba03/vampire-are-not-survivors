@@ -13,12 +13,10 @@ use crate::player::{ Health, Player };
 
 use super::Monster;
 
-// const PLAYER_DAMAGABLE_RADIUS: f32 = 20.;
 
 pub fn handle_damage_timer(
     mut _commands: Commands,
     mut monsters_q: Query<&mut DamageTimer, With<Monster>>,
-    // mut player_q: Query<(&Transform, &mut Health), (Without<Monster>, With<Player>)>,
     time: Res<Time>
 ) {
     for mut timer in monsters_q.iter_mut() {
@@ -45,12 +43,11 @@ pub fn deal_damage_to_player(
             if colliding_entities.get(&ent).is_some() {
                 if timer.0.finished() {
                     timer.reset();
-                    health.deal_damage(monster.damage);
+                    if !health.deal_damage(monster.damage) {
+                        _commands.entity(ent).despawn();
+                    }
                 }
             }
-
-            // sprite.color = Color::RED;
-            // info!("COLLISION");
         }
     }
 }

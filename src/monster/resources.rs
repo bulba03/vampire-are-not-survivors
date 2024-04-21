@@ -1,4 +1,5 @@
 use bevy::math::Vec2;
+use bevy::time::TimerMode::Repeating;
 use bevy::time::Timer;
 use bevy::sprite::TextureAtlasLayout;
 use bevy::render::texture::Image;
@@ -6,16 +7,26 @@ use bevy::ecs::system::{ Res, Resource };
 use bevy::asset::{ AssetServer, Assets, Handle };
 
 use crate::animation::AnimationIndices;
-
 use super::monster_type::MonsterType;
 
 const BAT_ANIM: &str = "monster/Monsters_Creatures_Fantasy/Flying eye/Flight.png";
 const MUSHROOM_ANIM: &str = "monster/Monsters_Creatures_Fantasy/Mushroom/Run.png";
+const MAX_ENEMY_COUNT: i64 = 100;
 #[derive(Resource)]
 pub struct MonsterCounter {
     pub(crate) enemy_count: i64,
     pub(crate) max_enemy_count: i64,
     pub(crate) enemy_spawn_timer: Timer,
+}
+
+impl Default for MonsterCounter {
+    fn default() -> Self {
+        Self {
+            enemy_count: 0,
+            max_enemy_count: MAX_ENEMY_COUNT,
+            enemy_spawn_timer: Timer::from_seconds(0.3, Repeating)
+        }
+    }
 }
 
 #[derive(Resource)]
