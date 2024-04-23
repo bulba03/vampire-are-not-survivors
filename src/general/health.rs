@@ -11,13 +11,18 @@ use bevy::ecs::{
     system::{ Commands, Query },
 };
 
-use super::Health;
 const HEALTHBAR_LAYER: f32 = 90.1;
 const HEALTHBAR_LAYER_BG: f32 = 90.0;
 #[derive(Component)]
 pub struct HealthBar {
     pub size: Vec2,
     pub offset: Vec2,
+}
+
+#[derive(Component)]
+pub struct Health {
+    pub max: f32,
+    pub current: f32,
 }
 
 #[derive(Component)]
@@ -33,10 +38,12 @@ impl Default for HealthBar {
 }
 
 impl Health {
-    pub fn deal_damage(&mut self, damage: f32) -> bool {
+    pub fn deal_damage(&mut self, damage: f32) {
         self.current -= damage;
-        let _ = self.current.clamp(0.0, self.max);
-        self.current > 0.
+        self.current = self.current.clamp(0.0, self.max);
+    }
+    pub fn is_alive(&self) -> bool {
+        return self.current > 0.0;
     }
 }
 
@@ -82,6 +89,7 @@ pub fn update_health_bar(
     mut hp_bar_query: Query<&mut Transform, With<HealthBarBar>>
 ) {
     for (health, hp_bar) in pl_health_query.iter_mut() {
+        //TODO: Move from single hp_bar entity (causes panic if add multiple healthbars)
         let mut transform = hp_bar_query.single_mut();
         let frac = (health.current / health.max).clamp(0.0, 1.0);
         let current_width = frac * hp_bar.size.x;

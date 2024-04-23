@@ -1,22 +1,24 @@
 mod movement;
-mod healthbar;
-
+mod attack;
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
-use bevy::ecs::schedule::IntoSystemConfigs;
+use bevy::ecs::schedule::{ IntoSystemConfigs, IntoSystemSetConfigs, SystemSet };
 use bevy::time::{ Timer, TimerMode };
 use bevy::transform::components::Transform;
 use bevy::sprite::{ SpriteSheetBundle, TextureAtlas, TextureAtlasLayout };
-use bevy::prelude::{default, App};
+use bevy::prelude::{ default, App };
 use bevy::math::{ Vec2, Vec3 };
 use bevy::ecs::{ component::Component, system::{ Commands, Res, ResMut } };
 use bevy::asset::{ AssetServer, Assets };
-use bevy::app::{ Plugin, PostUpdate, Startup, Update };
+use bevy::app::{ Plugin, Startup, Update };
 use bevy_xpbd_2d::components::{ LockedAxes, RigidBody };
 use bevy_xpbd_2d::plugins::collision::Collider;
 use bevy_xpbd_2d::plugins::{ PhysicsDebugPlugin, PhysicsPlugins };
 use crate::animation::{ AnimationIndices, AnimationTimer };
+use crate::general::damage_timer::DamageTimer;
+use crate::general::health::{spawn_healthbar, Health, HealthBar};
+use crate::general::GeneralSet;
 use crate::run_if_player_alive;
-use self::healthbar::{ spawn_healthbar, update_health_bar, HealthBar };
+use self::attack::{ debug_player_attack, handle_attack_pressed, AttackEvent };
 use self::movement::handle_movement;
 
 const SKELETON_WALK_ANIM: &str = "monster/Monsters_Creatures_Fantasy/Skeleton/Walk.png";
@@ -31,22 +33,26 @@ impl Plugin for PlayerPlugin {
                 PhysicsDebugPlugin::default(),
                 FrameTimeDiagnosticsPlugin,
             ))
-            .add_systems(Update, handle_movement.run_if(run_if_player_alive))
-            .add_systems(PostUpdate, update_health_bar.run_if(run_if_player_alive));
+            .add_event::<AttackEvent>()
+            .configure_sets(Update, MyInputSet.run_if(run_if_player_alive).after(GeneralSet))
+            .add_systems(
+                Update,
+                (handle_movement, handle_attack_pressed, debug_player_attack)
+                    .run_if(run_if_player_alive)
+                    .chain()
+                    .in_set(MyInputSet)
+            );
     }
 }
-
+#[derive(SystemSet, Debug, Clone, PartialEq, Eq, Hash)]
+struct MyInputSet;
 #[derive(Component)]
 pub struct Player {
     pub speed: f32,
     pub base_damage: f32,
     pub is_moving: bool,
 }
-#[derive(Component)]
-pub struct Health {
-    pub max: f32,
-    pub current: f32,
-}
+
 fn spawn_player(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -82,6 +88,7 @@ fn spawn_player(
             HealthBar::default(),
             Collider::rectangle(40.0, 50.0),
             LockedAxes::ROTATION_LOCKED,
+            DamageTimer(Timer::from_seconds(0.25, TimerMode::Once)),
             RigidBody::Dynamic,
         ))
         .id();

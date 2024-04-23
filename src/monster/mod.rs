@@ -1,6 +1,6 @@
 use bevy::ecs::schedule::IntoSystemConfigs;
 use bevy::transform::components::Transform;
-use bevy::time::{ Time, Timer, TimerMode };
+use bevy::time::Time;
 use bevy::sprite::TextureAtlasLayout;
 use bevy::math::{ Vec2, Vec3Swizzles };
 use bevy::ecs::{ component::Component, query::With, system::{ Commands, Query, Res, ResMut } };
@@ -16,26 +16,22 @@ use crate::player::Player;
 use crate::run_if_player_alive;
 
 use self::bundles::{ bat_bundle, mushroom_bundle };
-use self::damage::{ deal_damage_to_player, handle_damage_timer };
+use self::damage::deal_damage_to_player;
 use self::resources::{ MonsterCounter, MonstersData };
 
-const ENEMY_SPAWN_RADIUS: f32 = 400.0;
+const ENEMY_SPAWN_RADIUS: f32 = 200.0;
 pub struct MonsterPlugin;
 
 impl Plugin for MonsterPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
-        app.insert_resource(MonsterCounter {
-            enemy_count: 0,
-            max_enemy_count: 50,
-            enemy_spawn_timer: Timer::from_seconds(0.5, TimerMode::Repeating),
-        })
+        app.init_resource::<MonsterCounter>()
             .add_systems(Startup, load_monster_sprites)
-            .add_systems(Update, (
-                handle_enemy_spawn_timer,
-                movement::move_to_player,
-                handle_damage_timer,
-                deal_damage_to_player,
-            ).run_if(run_if_player_alive));
+            .add_systems(
+                Update,
+                (handle_enemy_spawn_timer, movement::move_to_player, deal_damage_to_player).run_if(
+                    run_if_player_alive
+                )
+            );
     }
 }
 
@@ -86,4 +82,5 @@ fn spawn_monster(mut commands: Commands, sprite_data: ResMut<MonstersData>, play
         _ => todo!(),
     };
     commands.spawn(bundle);
+    // spawn_healthbar(commands, s);
 }

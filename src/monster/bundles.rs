@@ -8,14 +8,11 @@ use bevy::{
 };
 use bevy_xpbd_2d::{ components::{ LockedAxes, RigidBody }, plugins::collision::Collider };
 
-use crate::{ animation::{ AnimationIndices, AnimationTimer }, player::Health };
+use crate::animation::{ AnimationIndices, AnimationTimer };
+use crate::general::health::Health;
 
-use super::{
-    damage::{ DamageTimer, MonsterCollider },
-    monster_type::MonsterType,
-    resources::MonstersData,
-    Monster,
-};
+use super::{ damage::MonsterCollider, monster_type::MonsterType, resources::MonstersData, Monster };
+use crate::general::damage_timer::DamageTimer;
 
 #[derive(Bundle)]
 pub struct MonsterBundle {

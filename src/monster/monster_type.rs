@@ -16,7 +16,7 @@ impl Monster {
 
 fn bat_monster_stats() -> Monster {
     Monster {
-        hp: 10.0,
+        hp: 15.0,
         damage: 20.0,
         speed: 25.0,
     }

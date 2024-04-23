@@ -1,31 +1,12 @@
-use bevy::time::{ Time, Timer };
 use bevy::reflect::Reflect;
-use bevy::prelude::{ Deref, DerefMut };
-use bevy::ecs::{
-    component::Component,
-    entity::Entity,
-    query::With,
-    system::{ Commands, Query, Res },
-};
+use bevy::ecs::{ component::Component, entity::Entity, query::With, system::{ Commands, Query } };
 use bevy_xpbd_2d::plugins::collision::CollidingEntities;
 
-use crate::player::{ Health, Player };
+use crate::general::damage_timer::DamageTimer;
+use crate::player::Player;
+use crate::general::health::Health;
 
 use super::Monster;
-
-
-pub fn handle_damage_timer(
-    mut _commands: Commands,
-    mut monsters_q: Query<&mut DamageTimer, With<Monster>>,
-    time: Res<Time>
-) {
-    for mut timer in monsters_q.iter_mut() {
-        timer.tick(time.delta());
-    }
-}
-
-#[derive(Component, Deref, DerefMut)]
-pub struct DamageTimer(pub Timer);
 
 #[derive(Component, Default, Reflect)]
 pub struct MonsterCollider;
@@ -43,7 +24,8 @@ pub fn deal_damage_to_player(
             if colliding_entities.get(&ent).is_some() {
                 if timer.0.finished() {
                     timer.reset();
-                    if !health.deal_damage(monster.damage) {
+                    health.deal_damage(monster.damage);
+                    if health.is_alive() == false {
                         _commands.entity(ent).despawn();
                     }
                 }
