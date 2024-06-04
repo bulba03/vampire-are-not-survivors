@@ -4,18 +4,19 @@ use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use bevy::ecs::schedule::{ IntoSystemConfigs, IntoSystemSetConfigs, SystemSet };
 use bevy::time::{ Timer, TimerMode };
 use bevy::transform::components::Transform;
-use bevy::sprite::{ SpriteSheetBundle, TextureAtlas, TextureAtlasLayout };
+use bevy::sprite::{ Sprite, SpriteSheetBundle, TextureAtlas, TextureAtlasLayout };
 use bevy::prelude::{ default, App };
-use bevy::math::{ Vec2, Vec3 };
+use bevy::math::{ vec2, Vec2, Vec3 };
 use bevy::ecs::{ component::Component, system::{ Commands, Res, ResMut } };
 use bevy::asset::{ AssetServer, Assets };
-use bevy::app::{ Plugin, Startup, Update };
+use bevy::app::{ Plugin, PostStartup, Startup, Update };
 use bevy_xpbd_2d::components::{ LockedAxes, RigidBody };
 use bevy_xpbd_2d::plugins::collision::Collider;
 use bevy_xpbd_2d::plugins::{ PhysicsDebugPlugin, PhysicsPlugins };
 use crate::animation::{ AnimationIndices, AnimationTimer };
 use crate::general::damage_timer::DamageTimer;
 use crate::general::health::{spawn_healthbar, Health, HealthBar};
+use crate::general::sheets_holder::SheetsHolder;
 use crate::general::GeneralSet;
 use crate::run_if_player_alive;
 use self::attack::{ debug_player_attack, handle_attack_pressed, AttackEvent };
@@ -27,7 +28,7 @@ pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, spawn_player)
+        app.add_systems(PostStartup, spawn_player.after(GeneralSet))
             .add_plugins((
                 PhysicsPlugins::default(),
                 PhysicsDebugPlugin::default(),
@@ -56,21 +57,27 @@ pub struct Player {
 fn spawn_player(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    pl_sprites: Res<SheetsHolder>
 ) {
-    let texture = asset_server.load(SKELETON_WALK_ANIM);
-    let layout = TextureAtlasLayout::from_grid(Vec2::new(150.0, 150.0), 4, 1, None, None);
-    let texture_atlas_layout = texture_atlas_layouts.add(layout);
-    let animation_indices = AnimationIndices { first: 0, last: 3 };
+    let texture = pl_sprites.up.clone();
+    // let layout = TextureAtlasLayout::from_grid(Vec2::new(150.0, 150.0), 4, 1, None, None);
+    // let texture_atlas_layout = texture_atlas_layouts.add(layout);
+    let animation_indices = AnimationIndices { first: 0, last: 8 };
 
     let entity = commands
         .spawn((
             SpriteSheetBundle {
                 texture,
                 atlas: TextureAtlas {
-                    layout: texture_atlas_layout,
+                    layout: pl_sprites.up_texture_layout.clone(),
                     index: animation_indices.first,
                 },
+                sprite: Sprite {
+                    custom_size: Some(Vec2 { x: 40., y: 50. }),
+                    ..Default::default()
+                },
+                
                 transform: Transform::from_scale(Vec3::splat(1.0)),
                 ..default()
             },
@@ -84,7 +91,7 @@ fn spawn_player(
                 current: 100.0,
             },
             animation_indices,
-            AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
+            AnimationTimer(Timer::from_seconds(0.05, TimerMode::Repeating)),
             HealthBar::default(),
             Collider::rectangle(40.0, 50.0),
             LockedAxes::ROTATION_LOCKED,

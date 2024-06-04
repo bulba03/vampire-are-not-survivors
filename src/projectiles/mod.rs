@@ -70,6 +70,7 @@ pub fn handle_projectile_collision(
                         commands.entity(entity).despawn();
                     }
                     commands.entity(proj_ent).despawn();
+                    return;
                 }
             }
         }

@@ -1,10 +1,5 @@
 use bevy::{
-    ecs::bundle::Bundle,
-    math::Vec2,
-    prelude::default,
-    sprite::{ Sprite, SpriteSheetBundle, TextureAtlas },
-    time::{ Timer, TimerMode },
-    transform::components::Transform,
+    core::Name, ecs::bundle::Bundle, math::Vec2, prelude::default, sprite::{ Sprite, SpriteSheetBundle, TextureAtlas }, time::{ Timer, TimerMode }, transform::components::Transform
 };
 use bevy_xpbd_2d::{ components::{ LockedAxes, RigidBody }, plugins::collision::Collider };
 
@@ -26,6 +21,7 @@ pub struct MonsterBundle {
     animation_timer: AnimationTimer,
     damage_timer: DamageTimer,
     monster: Monster,
+    name: Name
 }
 
 pub fn mushroom_bundle(sprite_data: &MonstersData, pos: Vec2, flip_sprite: bool) -> MonsterBundle {
@@ -49,7 +45,7 @@ pub fn mushroom_bundle(sprite_data: &MonstersData, pos: Vec2, flip_sprite: bool)
         ..default()
     };
     sprite_sheet_bundle.sprite.flip_x = flip_sprite;
-    let monster = Monster::construct_from_type(MonsterType::Bat);
+    let monster = Monster::construct_from_type(MonsterType::Mushroom);
 
     MonsterBundle {
         sprite_sheet_bundle,
@@ -65,6 +61,7 @@ pub fn mushroom_bundle(sprite_data: &MonstersData, pos: Vec2, flip_sprite: bool)
         animation_timer: AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
         damage_timer: DamageTimer(Timer::from_seconds(0.5, TimerMode::Once)),
         monster,
+        name: Name::new("Mushroom")
     }
 }
 
@@ -105,5 +102,6 @@ pub fn bat_bundle(sprite_data: &MonstersData, pos: Vec2, flip_sprite: bool) -> M
         animation_timer: AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
         damage_timer: DamageTimer(Timer::from_seconds(0.5, TimerMode::Once)),
         monster,
+        name: Name::new("Bat")
     }
 }

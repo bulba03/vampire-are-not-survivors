@@ -1,4 +1,5 @@
 use bevy::{ prelude::*, window::{ PresentMode, WindowTheme } };
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_xpbd_2d::{ math::Vector, resources::Gravity };
 use player::Player;
 pub mod player;
@@ -32,6 +33,7 @@ fn main() {
                 ..default()
             })
         )
+        .add_plugins(WorldInspectorPlugin::new())
 
         .insert_resource(Gravity(Vector::ZERO))
         
