@@ -1,5 +1,5 @@
 mod movement;
-mod attack;
+pub mod attack;
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use bevy::ecs::schedule::{ IntoSystemConfigs, IntoSystemSetConfigs, SystemSet };
 use bevy::time::{ Timer, TimerMode };
