@@ -19,7 +19,7 @@ use crate::general::health::{spawn_healthbar, Health, HealthBar};
 use crate::general::sheets_holder::SheetsHolder;
 use crate::general::GeneralSet;
 use crate::run_if_player_alive;
-use self::attack::{ debug_player_attack, handle_attack_pressed, AttackEvent };
+use self::attack::{ player_attack, handle_attack_pressed, AttackEvent };
 use self::movement::handle_movement;
 
 const SKELETON_WALK_ANIM: &str = "monster/Monsters_Creatures_Fantasy/Skeleton/Walk.png";
@@ -38,7 +38,7 @@ impl Plugin for PlayerPlugin {
             .configure_sets(Update, MyInputSet.run_if(run_if_player_alive).after(GeneralSet))
             .add_systems(
                 Update,
-                (handle_movement, handle_attack_pressed, debug_player_attack)
+                (handle_movement, handle_attack_pressed, player_attack)
                     .run_if(run_if_player_alive)
                     .chain()
                     .in_set(MyInputSet)

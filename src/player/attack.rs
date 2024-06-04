@@ -37,7 +37,7 @@ pub fn handle_attack_pressed(
     }
 }
 
-pub fn debug_player_attack(
+pub fn player_attack(
     mut commands: Commands,
     mut er_attack: EventReader<AttackEvent>,
     mut pl_q: Query<(&Player, &mut DamageTimer, &Transform)>
@@ -74,6 +74,5 @@ pub fn debug_player_attack(
             Collider::rectangle(3.0, 3.0),
             Sensor,
         ));
-        info!("ASD");
     }
 }

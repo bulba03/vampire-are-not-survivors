@@ -17,9 +17,7 @@ pub fn handle_movement(
 
         //none of the buttons are pressed
         if direction == Vec3::ZERO {
-            for (_, _, mut char, _,_) in &mut query {
-                char.is_moving = false;
-            }
+            char.is_moving = false;
             return;
         }
         if direction.y < 0. {
