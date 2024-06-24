@@ -16,3 +16,4 @@ bevy_asset_loader = {version = "0.20.1", features = ["2d"]}
 rand = "0.8.5"
 bevy_xpbd_2d = "0.4"
 bevy-inspector-egui = "0.24.0"
+sickle_ui = { rev = "a548517", git = "https://github.com/UmbraLuminosa/sickle_ui" }

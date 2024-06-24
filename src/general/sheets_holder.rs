@@ -1,4 +1,5 @@
-use bevy::{asset::{AssetServer, Assets, Handle}, ecs::{component::Component, system::{Commands, Res, ResMut, Resource}}, math::Vec2, prelude::default, reflect::Reflect, render::{render_resource::Texture, texture::{self, Image}}, sprite::TextureAtlasLayout, utils::{HashMap, HashSet}};
+use bevy::{asset::{AssetServer, Assets, Handle}, ecs::{component::Component, system::{Commands, Res, ResMut, Resource}}, math::{vec2, Vec2}, prelude::default, reflect::Reflect, render::{render_resource::Texture, texture::{self, Image}}, sprite::TextureAtlasLayout, utils::{HashMap, HashSet}};
+
 
 use crate::animation::AnimationIndices;
 
@@ -20,11 +21,11 @@ impl SheetsHolder {
     pub fn construct_player(mut commands: Commands, asset_server: Res<AssetServer>,
         mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>)  {
 
-            let texture1 = asset_server.load("rgl.png".to_string());
-            let layout = TextureAtlasLayout::from_grid(Vec2::new(224.8, 256.0), 9, 1, None, None);
+            let texture1 = asset_server.load("spritesheet.png".to_string());
+            let layout = TextureAtlasLayout::from_grid(Vec2::new(84.8, 101.0), 10, 1, Some(vec2(1., 0.)), None);
             let texture_atlas_layout = texture_atlas_layouts.add(layout);
-            let animation_indices = AnimationIndices { first: 0, last: 8 };
-            let texture2 = asset_server.load("rgl.png".to_string());
+            let animation_indices = AnimationIndices { first: 0, last: 9 };
+            let texture2 = asset_server.load("spritesheet.png".to_string());
             commands.insert_resource(Self {
                 up: texture1,
                 up_indices: AnimationIndices { first: 0, last: 0 },

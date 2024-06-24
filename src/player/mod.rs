@@ -31,7 +31,7 @@ impl Plugin for PlayerPlugin {
         app.add_systems(PostStartup, spawn_player.after(GeneralSet))
             .add_plugins((
                 PhysicsPlugins::default(),
-                PhysicsDebugPlugin::default(),
+                // PhysicsDebugPlugin::default(),
                 FrameTimeDiagnosticsPlugin,
             ))
             .add_event::<AttackEvent>()
@@ -63,7 +63,7 @@ fn spawn_player(
     let texture = pl_sprites.up.clone();
     // let layout = TextureAtlasLayout::from_grid(Vec2::new(150.0, 150.0), 4, 1, None, None);
     // let texture_atlas_layout = texture_atlas_layouts.add(layout);
-    let animation_indices = AnimationIndices { first: 0, last: 8 };
+    let animation_indices = AnimationIndices { first: 0, last: 9 };
 
     let entity = commands
         .spawn((
@@ -74,7 +74,8 @@ fn spawn_player(
                     index: animation_indices.first,
                 },
                 sprite: Sprite {
-                    custom_size: Some(Vec2 { x: 40., y: 50. }),
+                    custom_size: Some(Vec2 { x: 84., y: 101. }),
+                    anchor: bevy::sprite::Anchor::Center,
                     ..Default::default()
                 },
                 
